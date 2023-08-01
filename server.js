@@ -35,6 +35,12 @@ io.on("connection", (socket) => {
     socket.on('player2_y', (leftMove) => {
       io.emit('player2movimento', leftMove);
     })
+    socket.on('bolaY', (ballY) => {
+      io.emit('bolaYmovimento', ballY);
+    })
+    socket.on('bolaX', (ballX) => {
+      io.emit('bolaXmovimento', ballX);
+    })
 
     socket.on("disconnect", () => {
       console.log(`[${socket.id}] Usuário Desconectado`);

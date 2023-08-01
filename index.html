@@ -78,6 +78,14 @@ function collides(obj1, obj2) {
 
 // game loop
 function loop() {
+  // Atualiza a bola
+  socket.on('bolaYmovimento', (ballY) => {
+    ball.dy = ballY;
+  })
+  socket.on('bolaXmovimento', (ballX) => {
+    ball.dx = ballX;
+  })
+
   requestAnimationFrame(loop);
   context.clearRect(0,0,canvas.width,canvas.height);
 
@@ -122,6 +130,9 @@ function loop() {
     // reset ball if it goes past paddle (but only if we haven't already done so)
     if ( (ball.x < 0 || ball.x > canvas.width) && !ball.resetting) {
     ball.resetting = true;
+    socket.emit('bolaY', ball.dy);
+    socket.emit('bolaX', ball.dx);
+    
 
     // give some time for the player to recover before launching the ball again
     setTimeout(() => {
@@ -161,7 +172,7 @@ function loop() {
 }
 
 var beta = 0;
-// listen to keyboard events to move the paddles
+// Move com base no DevieOrientation
 socket.on('id', (userAtual) => {
   window.addEventListener('deviceorientation', function(e) {    
     if(userAtual === 1){
