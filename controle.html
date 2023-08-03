@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pong</title>
+  <meta charset="UTF-8">
+</head>
+<body></body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io();
+var beta = 0;
+var paddleSpeed = 6;
+
+// Move com base no DevieOrientation
+socket.on('id', (userAtual) => {
+  window.addEventListener('deviceorientation', function(e) {    
+    if(userAtual === 2){
+      beta = e.beta
+      // up player1
+      if (e.beta < -10) {
+        rightPaddle = -paddleSpeed;
+      }
+      // down player1
+      else if (e.beta > 10) {
+        rightPaddle = paddleSpeed;
+      } 
+      // stoped player
+      else {
+        rightPaddle = 0; 
+      }
+      socket.emit('player1_y', rightPaddle);
+    } else if(userAtual === 3){
+      beta = e.beta
+      // up player2
+      if (e.beta < -10) {
+        leftPaddle = -paddleSpeed;
+      }
+      // down player2
+      else if (e.beta > 10) {
+        leftPaddle = paddleSpeed;
+      } 
+      else {
+        leftPaddle = 0;
+      }
+      socket.emit('player2_y', leftPaddle); 
+      }
+   });  
+});
+
+// browsers require full screen mode in order to obtain the orientation lock
+var goFullScreen = null;
+        var exitFullScreen = null;
+        if ('requestFullscreen' in document.documentElement) {
+            goFullScreen = 'requestFullscreen';
+            exitFullScreen = 'exitFullscreen';
+        } else if ('mozRequestFullScreen' in document.documentElement) {
+            goFullScreen = 'mozRequestFullScreen';
+            exitFullScreen = 'mozCancelFullScreen';
+        } else if ('webkitRequestFullscreen' in document.documentElement) {
+            goFullScreen = 'webkitRequestFullscreen';
+            exitFullScreen = 'webkitExitFullscreen';
+        } else if ('msRequestFullscreen') {
+            goFullScreen = 'msRequestFullscreen';
+            exitFullScreen = 'msExitFullscreen';
+        }
+
+window.alert('Por favor, gire seu dispositivo (celular deitado)');
+
+window.screen.orientation.addEventListener('change', function(e) {
+  const orientation = e.currentTarget.type;
+  console.log(orientation);
+    if(orientation == "landscape-primary" || orientation == "landscape-secondary") {
+      document.documentElement[goFullScreen] && document.documentElement[goFullScreen](); 
+      window.screen.orientation.lock(orientation);
+      //document.querySelector(".controls").classList.toggle("hide");
+      //document.querySelector(".bla").classList.toggle("hide");
+  }
+});
+
+document.addEventListener("fullscreenchange", function(e) {
+    if (window.screen.orientation.type === "landscape-primary" || window.screen.orientation.type === "landscape-secondary"){
+      window.screen.orientation.lock(window.screen.orientation.type);
+    }
+});
+
+</script>
+</html>

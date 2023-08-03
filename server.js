@@ -9,11 +9,15 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/controle.html");
 });
 
+app.get("/tela", (req, res2) => {
+  res2.sendFile(__dirname + "/tela.html");
+})
+
 const users = {};
-const limit = 2;
+const limit = 3;
 let userAtual = 0;
 io.on("connection", (socket) => {
   if (userAtual == limit) {
@@ -22,10 +26,13 @@ io.on("connection", (socket) => {
     console.log(`[${socket.id}] Usuário Conectado`);
     users[socket.id] = { id: socket.io, y: 0 };
     userAtual = userAtual + 1;
-    if (userAtual === 1) {
+    if (userAtual === 1){
+      socket.join("tela");
+    }
+    else if (userAtual === 2) {
       socket.join("player1");
       io.to("player1").emit("id", userAtual);
-    } else if(userAtual === 2) {
+    } else if(userAtual === 3) {
       socket.join("player2");
       io.to("player2").emit("id", userAtual);
     }
@@ -34,12 +41,6 @@ io.on("connection", (socket) => {
     })
     socket.on('player2_y', (leftMove) => {
       io.emit('player2movimento', leftMove);
-    })
-    socket.on('bolaY', (ballY) => {
-      io.emit('bolaYmovimento', ballY);
-    })
-    socket.on('bolaX', (ballX) => {
-      io.emit('bolaXmovimento', ballX);
     })
 
     socket.on("disconnect", () => {
