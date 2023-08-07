@@ -18,7 +18,9 @@
   </style>
 </head>
 <body>
-<canvas width="615" height="800" id="game"></canvas>
+  <h1 id="p1" style="color:white; font-size: 150px; position: absolute; left: 25%;">0</h1>
+  <canvas width="615" height="800" id="game"></canvas>
+  <h1 id="p2" style="color:white; font-size: 150px; position: absolute; right: 25%;">0</h1>
 </body>
 <script src="/socket.io/socket.io.js"></script>
   
@@ -30,6 +32,11 @@ const context = canvas.getContext('2d');
 const grid = 15;
 const paddleHeight = grid * 5; // 80
 const maxPaddleX = canvas.width - grid - paddleHeight;
+
+var player1 = document.getElementById("p1");
+var player1score = 0;
+var player2 = document.getElementById("p2");
+var player2score = 0;
 
 var ballSpeed = 5;
 
@@ -123,6 +130,20 @@ function loop() {
     if ( (ball.y < 0 || ball.y > canvas.height) && !ball.resetting) {
     ball.resetting = true;
     
+    if(ball.y > canvas.height){
+      player1score += 1;
+      player1.innerHTML = player1score;
+    }else if(ball.y < 0){
+      player2score += 1;
+      player2.innerHTML = player2score;
+    }
+    
+    if(player1score == 10 || player2score == 10){
+      player1score = 0;
+      player1.innerHTML = player1score;
+      player2score = 0;
+      player2.innerHTML = player2score;
+    }
 
     // give some time for the player to recover before launching the ball again
     setTimeout(() => {
@@ -169,7 +190,7 @@ socket.on('player1movimento', (rightMove) => {
 })
 socket.on('player2movimento', (leftMove) => {
   leftPaddle.dx = leftMove;
-  })
+})
   // start the game
 requestAnimationFrame(loop);
 </script>
