@@ -15,12 +15,27 @@
     align-items: center;
     justify-content: center;
   }
+
+  #p1,
+  #p2 {
+    color:white; 
+    font-size: 150px; 
+    position: absolute; 
+  }
+
+  #p1 {
+    left: 25%;
+  }
+
+  #p2 {
+    right: 25%;
+  }
   </style>
 </head>
 <body>
-  <h1 id="p1" style="color:white; font-size: 150px; position: absolute; left: 25%;">0</h1>
+  <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
-  <h1 id="p2" style="color:white; font-size: 150px; position: absolute; right: 25%;">0</h1>
+  <h1 id="p2">0</h1>
 </body>
 <script src="/socket.io/socket.io.js"></script>
   
