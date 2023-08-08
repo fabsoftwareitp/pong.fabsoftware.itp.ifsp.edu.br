@@ -3,36 +3,9 @@
 <head>
   <title>Pong</title>
   <meta charset="UTF-8">
-  <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
-
-  body {
-    background: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #p1,
-  #p2 {
-    color:white; 
-    font-size: 150px; 
-    position: absolute; 
-  }
-
-  #p1 {
-    left: 25%;
-  }
-
-  #p2 {
-    right: 25%;
-  }
-  </style>
+  <link rel="stylesheet" href="/style.css">
 </head>
-<body>
+<body id="tela">
   <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>

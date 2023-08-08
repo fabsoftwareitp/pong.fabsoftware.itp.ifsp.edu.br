@@ -16,6 +16,9 @@ app.get("/tela", (req, res2) => {
   res2.sendFile(__dirname + "/tela.html");
 })
 
+app.use(express.static('img'));
+app.use(express.static('css'));
+
 const users = {};
 const limit = 3;
 let userAtual = 0;

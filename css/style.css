@@ -1,0 +1,43 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#tela {
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#p1,
+#p2 {
+  color:white; 
+  font-size: 150px; 
+  position: absolute; 
+}
+
+#p1 {
+  left: 25%;
+}
+
+#p2 {
+  right: 25%;
+}
+
+#controle {
+  min-width:100%;
+  background-color:#fd624c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#controle > img {
+  filter:brightness(5);
+  width: 25%;
+}
+
+#controle > svg {
+  width: 30%;
+}
