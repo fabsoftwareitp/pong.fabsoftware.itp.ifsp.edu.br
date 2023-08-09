@@ -12,17 +12,19 @@ html, body {
 
 #p1,
 #p2 {
-  color:white; 
+  color: white;
   font-size: 150px; 
   position: absolute; 
 }
 
 #p1 {
   left: 25%;
+  text-shadow: 5px 5px 0px #db241a;
 }
 
 #p2 {
   right: 25%;
+  text-shadow: 5px 5px 0px #0288f5;
 }
 
 #controle {

@@ -96,9 +96,11 @@ function loop() {
   }
 
   // draw paddles
-  context.fillStyle = 'white';
+  context.fillStyle = '#db241a'; //red
   context.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+  context.fillStyle = '#0288f5'; //blue
   context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+  context.fillStyle = 'white';
 
   // move ball by its velocity
   ball.x += ball.dx;
@@ -159,8 +161,6 @@ function loop() {
   // draw ball
   context.fillRect(ball.x, ball.y, ball.width, ball.height);
 
-  // draw walls
-  context.fillStyle = 'lightgrey';
   //context.fillRect(0, 0, canvas.width, grid);
   context.fillRect(0, 0, grid, canvas.height);
   context.fillRect(canvas.width - grid, 0, grid, canvas.height);
