@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="tela">
+  <img id="fab-logo" src="/Fab.png" alt="Logo da Fábrica de Software">
   <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>
@@ -20,6 +21,10 @@ const context = canvas.getContext('2d');
 const grid = 15;
 const paddleHeight = grid * 5; // 80
 const maxPaddleX = canvas.width - grid - paddleHeight;
+const hitPlayer = new Audio('/hit.mp3');
+const hitWall = new Audio('/wall.mp3');
+const scoreP1audio = new Audio('/userScore.mp3');
+const scoreP2audio = new Audio('/comScore.mp3');
 
 var player1 = document.getElementById("p1");
 var player1score = 0;
@@ -110,10 +115,12 @@ function loop() {
   if (ball.x < grid) {
     ball.x = grid;
     ball.dx *= -1;
+    hitWall.play();
   }
   else if (ball.x + grid > canvas.width - grid) {
     ball.x = canvas.width - grid * 2;
     ball.dx *= -1;
+    hitWall.play();
   }
 
     // reset ball if it goes past paddle (but only if we haven't already done so)
@@ -123,9 +130,11 @@ function loop() {
     if(ball.y > canvas.height){
       player1score += 1;
       player1.innerHTML = player1score;
+      scoreP1audio.play();
     }else if(ball.y < 0){
       player2score += 1;
       player2.innerHTML = player2score;
+      scoreP2audio.play();
     }
     
     if(player1score == 10 || player2score == 10){
@@ -146,6 +155,7 @@ function loop() {
   // check to see if ball collides with paddle. if they do change x velocity
   if (collides(ball, leftPaddle)) {
     ball.dy *= -1;
+    hitPlayer.play();
 
     // move ball next to the paddle otherwise the collision will happen again
     // in the next frame
@@ -153,6 +163,7 @@ function loop() {
   }
   else if (collides(ball, rightPaddle)) {
     ball.dy *= -1;
+    hitPlayer.play();
 
     // move ball next to the paddle otherwise the collision will happen again
     // in the next frame

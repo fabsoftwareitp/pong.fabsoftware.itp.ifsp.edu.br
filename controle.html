@@ -15,11 +15,13 @@
 var socket = io();
 var beta = 0;
 var paddleSpeed = 6;
+let controle = document.getElementById("controle");
 
 // Move com base no DevieOrientation
 socket.on('id', (userAtual) => {
   window.addEventListener('deviceorientation', function(e) {    
     if(userAtual === 2){
+      controle.style.cssText = 'background-color: #0288f5'; //blue
       beta = e.beta
       // up player1
       if (e.beta < -10) {
@@ -35,6 +37,7 @@ socket.on('id', (userAtual) => {
       }
       socket.emit('player1_y', rightPaddle);
     } else if(userAtual === 3){
+      controle.style.cssText = 'background-color: #db241a'; //red
       beta = e.beta
       // up player2
       if (e.beta < -10) {

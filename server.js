@@ -18,6 +18,7 @@ app.get("/tela", (req, res2) => {
 
 app.use(express.static('img'));
 app.use(express.static('css'));
+app.use(express.static('sounds'));
 
 const users = {};
 const limit = 3;

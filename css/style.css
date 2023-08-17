@@ -43,3 +43,9 @@ html, body {
 #controle > svg {
   width: 30%;
 }
+
+#fab-logo {
+  position: absolute;
+  width: 25vw;
+  filter: opacity(0.1);
+}
