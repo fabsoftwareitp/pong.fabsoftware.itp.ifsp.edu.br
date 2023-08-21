@@ -20,7 +20,8 @@ const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');
 const grid = 15;
 const paddleHeight = grid * 5; // 80
-const maxPaddleX = canvas.width - grid - paddleHeight;
+let maxPaddleXright = canvas.width - grid - paddleHeight;
+let maxPaddleXleft = canvas.width - grid - paddleHeight;
 const hitPlayer = new Audio('/hit.mp3');
 const hitWall = new Audio('/wall.mp3');
 const scoreP1audio = new Audio('/userScore.mp3');
@@ -89,15 +90,15 @@ function loop() {
   if (leftPaddle.x < grid) {
     leftPaddle.x = grid;
   }
-  else if (leftPaddle.x > maxPaddleX) {
-    leftPaddle.x = maxPaddleX;
+  else if (leftPaddle.x > maxPaddleXleft) {
+    leftPaddle.x = maxPaddleXleft;
   }
 
   if (rightPaddle.x < grid) {
     rightPaddle.x = grid;
   }
-  else if (rightPaddle.x > maxPaddleX) {
-    rightPaddle.x = maxPaddleX;
+  else if (rightPaddle.x > maxPaddleXright) {
+    rightPaddle.x = maxPaddleXright;
   }
 
   // draw paddles
@@ -140,8 +141,27 @@ function loop() {
     if(player1score == 10 || player2score == 10){
       player1score = 0;
       player1.innerHTML = player1score;
+      rightPaddle.width = paddleHeight;
+      maxPaddleXright = canvas.width - grid - paddleHeight;
       player2score = 0;
       player2.innerHTML = player2score;
+      leftPaddle.width = paddleHeight;
+      maxPaddleXleft = canvas.width - grid - paddleHeight;
+    }
+
+    if(player1score == player2score + 3) {
+      rightPaddle.width += 25;
+      maxPaddleXright = canvas.width - grid - paddleHeight - 25; 
+    } else if(player1score == player2score + 2) {
+      rightPaddle.width = paddleHeight;
+      maxPaddleXright = canvas.width - grid - paddleHeight;
+    }
+    if(player2score == player1score + 3) {
+      leftPaddle.width += 25;
+      maxPaddleXleft = canvas.width - grid - paddleHeight - 25;
+    } else if(player2score == player1score + 2) {
+      leftPaddle.width = paddleHeight;
+      maxPaddleXleft = canvas.width - grid - paddleHeight;
     }
 
     // give some time for the player to recover before launching the ball again
