@@ -23,6 +23,7 @@ app.use(express.static('sounds'));
 const users = {};
 const limit = 3;
 let userAtual = 0;
+let player1 = 0;
 io.on("connection", (socket) => {
   if (userAtual == limit) {
     console.log("Limite de usuários atingido");
@@ -34,6 +35,7 @@ io.on("connection", (socket) => {
       socket.join("tela");
     }
     else if (userAtual === 2) {
+      player1 = socket.id;
       socket.join("player1");
       io.to("player1").emit("id", userAtual);
     } else if(userAtual === 3) {
@@ -48,9 +50,12 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
-      console.log(`[${socket.id}] Usuário Desconectado`);
+      console.log(`[${socket.id}] Usuário Desconectado`)
       users[socket.id] = undefined;
       userAtual = userAtual - 1;
+      io.in("player2").socketsJoin("player1");
+      io.in("player2").socketsLeave("player2");
+      io.to("player1").emit("id", userAtual);
     });
   }
 });

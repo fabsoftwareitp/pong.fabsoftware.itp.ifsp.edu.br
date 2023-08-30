@@ -10,6 +10,8 @@
   <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>
+  <button id="start">Começar o Jogo</button>
+  <button id="reset">Reset</button>
 </body>
 <script src="/socket.io/socket.io.js"></script>
   
@@ -33,6 +35,10 @@ var player2 = document.getElementById("p2");
 var player2score = 0;
 
 var ballSpeed = 5;
+
+var startButton = document.getElementById("start");
+var resetButton = document.getElementById("reset");
+let reset = false;
 
 const leftPaddle = {
   // start in the middle of the game on the left side
@@ -81,6 +87,25 @@ function collides(obj1, obj2) {
 function loop() {
   requestAnimationFrame(loop);
   context.clearRect(0,0,canvas.width,canvas.height);
+
+  if(reset == true){
+      player1score = 0;
+      player1.innerHTML = player1score;
+      rightPaddle.width = paddleHeight;
+      maxPaddleXright = canvas.width - grid - paddleHeight;
+      player2score = 0;
+      player2.innerHTML = player2score;
+      leftPaddle.width = paddleHeight;
+      maxPaddleXleft = canvas.width - grid - paddleHeight;
+      ball.resetting = true;
+      ball.y = -10000;
+      setTimeout(() => {
+      ball.resetting = false;
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+    }, 400);
+      reset = false;
+    }
 
   // move paddles by their velocity
   leftPaddle.x += leftPaddle.dx;
@@ -210,7 +235,17 @@ socket.on('player1movimento', (rightMove) => {
 socket.on('player2movimento', (leftMove) => {
   leftPaddle.dx = leftMove;
 })
-  // start the game
-requestAnimationFrame(loop);
+
+startButton.addEventListener("click", () => {
+  requestAnimationFrame(loop);
+  player1.style.display="block";
+  player2.style.display="block";
+  startButton.style.display="none";
+  resetButton.style.display="block";
+})
+
+resetButton.addEventListener("click", () => {
+  reset = true;
+})
 </script>
 </html>
