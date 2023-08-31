@@ -13,7 +13,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 var socket = io();
-var beta = 0;
+var gamma = 0; //gamma para os tablets e beta para os celulares
 var paddleSpeed = 6;
 let controle = document.getElementById("controle");
 
@@ -22,13 +22,13 @@ socket.on('id', (userAtual) => {
   window.addEventListener('deviceorientation', function(e) {    
     if(userAtual === 2){
       controle.style.cssText = 'background-color: #0288f5'; //blue
-      beta = e.beta
+      gamma = e.gamma
       // up player1
-      if (e.beta < -10) {
+      if (e.gamma < -10) {
         rightPaddle = -paddleSpeed;
       }
       // down player1
-      else if (e.beta > 10) {
+      else if (e.gamma > 10) {
         rightPaddle = paddleSpeed;
       } 
       // stoped player
@@ -38,13 +38,13 @@ socket.on('id', (userAtual) => {
       socket.emit('player1_y', rightPaddle);
     } else if(userAtual === 3){
       controle.style.cssText = 'background-color: #db241a'; //red
-      beta = e.beta
+      gamma = e.gamma
       // up player2
-      if (e.beta < -10) {
+      if (e.gamma < -10) {
         leftPaddle = -paddleSpeed;
       }
       // down player2
-      else if (e.beta > 10) {
+      else if (e.gamma > 10) {
         leftPaddle = paddleSpeed;
       } 
       else {
