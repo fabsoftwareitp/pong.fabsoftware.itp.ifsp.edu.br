@@ -31,7 +31,9 @@ A primeira aba a ser acessada deve ser a /tela para a visualização do jogo, de
 
 
 # Acesso ao Projeto (Link do Projeto)
-[Pong](https://pong.fabsoftware.itp.ifsp.edu.br/)
+[Pong-Controle](https://pong.fabsoftware.itp.ifsp.edu.br/)
+
+[Pong-Tela](https://pong.fabsoftware.itp.ifsp.edu.br/tela/)
 
 # Contribuição/Autores
 - Vitor Gabriel Cavalheiro
