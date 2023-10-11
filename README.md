@@ -36,4 +36,5 @@ A primeira aba a ser acessada deve ser a /tela para a visualização do jogo, de
 [Pong-Tela](https://pong.fabsoftware.itp.ifsp.edu.br/tela/)
 
 # Contribuição/Autores
-- Vitor Gabriel Cavalheiro
+| [<img loading="lazy" src="https://avatars.githubusercontent.com/u/126813410?v=4" width=115><br><sub>Vitor Gabriel Cavalheiro</sub>](https://github.com/Vitor-G-Cavalheiro) |
+| :---: |
