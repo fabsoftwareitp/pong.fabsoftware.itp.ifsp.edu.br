@@ -22,10 +22,14 @@ de sua barrinha
 
 # Instruções de Uso
 Para jogar o pong localmente, deve ser feito o clonamento deste repositório.
+
 1. `git clone`
+
 Após isso, executar no terminal, os comandos:
+
 2. `npm install`
 3. `npm start`
+
 A primeira aba a ser acessada deve ser a /tela para a visualização do jogo, depois, basta abrir dois navegadores na mesma hospedagem e os controles já estaram conecatados a tela e o jogo poderá ser jogado
 
 
