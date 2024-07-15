@@ -6,13 +6,11 @@ const server = http.createServer(app);
 
 //Setup Socket.io
 const { Server } = require("socket.io");
-const io = new Server(server);
-
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/controle.html");
+const io = new Server(server, {
+  connectionStateRecovery: {}
 });
 
-app.get("/tela", (req, res2) => {
+app.get("/", (req, res2) => {
   res2.sendFile(__dirname + "/tela.html");
 })
 
@@ -21,9 +19,8 @@ app.use(express.static('css'));
 app.use(express.static('sounds'));
 
 const users = {};
-const limit = 3;
+const limit = 2;
 let userAtual = 0;
-let player1 = 0;
 io.on("connection", (socket) => {
   if (userAtual == limit) {
     console.log("Limite de usuários atingido");
@@ -31,22 +28,26 @@ io.on("connection", (socket) => {
     console.log(`[${socket.id}] Usuário Conectado`);
     users[socket.id] = { id: socket.io, y: 0 };
     userAtual = userAtual + 1;
-    if (userAtual === 1){
-      socket.join("tela");
+    if (userAtual === 1) {
+      io.emit("player1", socket.id);
+    } else if(userAtual === 2) {
+      io.emit("player2", socket.id);
     }
-    else if (userAtual === 2) {
-      player1 = socket.id;
-      socket.join("player1");
-      io.to("player1").emit("id", userAtual);
-    } else if(userAtual === 3) {
-      socket.join("player2");
-      io.to("player2").emit("id", userAtual);
-    }
+    
     socket.on('player1_y', (rightMove) => {
-      io.emit('player1movimento', rightMove);
-    })
+      io.emit('player1movimento', rightMove); 
+    });
     socket.on('player2_y', (leftMove) => {
       io.emit('player2movimento', leftMove);
+      io.emit('start', userAtual);
+    });
+
+    socket.on('ballPosition', (x, y) => {
+      io.emit('ballPosition', x, y);
+    })
+
+    socket.on('reset', (reset) => {
+      io.emit('reset', reset);
     })
 
     socket.on("disconnect", () => {

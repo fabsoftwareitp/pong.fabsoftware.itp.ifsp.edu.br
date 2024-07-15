@@ -154,10 +154,12 @@ function loop() {
     ball.resetting = true;
     
     if(ball.y > canvas.height){
+      socket.emit('ballPosition', ball.x, ball.y);
       player1score += 1;
       player1.innerHTML = player1score;
       scoreP1audio.play();
     }else if(ball.y < 0){
+      socket.emit('ballPosition', ball.x, ball.y);
       player2score += 1;
       player2.innerHTML = player2score;
       scoreP2audio.play();
@@ -236,6 +238,13 @@ socket.on('player2movimento', (leftMove) => {
   leftPaddle.dx = leftMove;
 })
 
+socket.emit('ballPosition', ball.x, ball.y);
+
+socket.on('ballPosition', (x, y) => {
+    ball.x = x;
+    ball.y = y;
+})
+
 startButton.addEventListener("click", () => {
   requestAnimationFrame(loop);
   player1.style.display="block";
@@ -244,8 +253,95 @@ startButton.addEventListener("click", () => {
   resetButton.style.display="block";
 })
 
+socket.on('reset', (re) => {
+  reset = re;
+})
+
 resetButton.addEventListener("click", () => {
   reset = true;
+  socket.emit('reset', reset);
+  socket.emit('ballPosition', ball.x, ball.y);
 })
+
+var beta = 0; //gamma para os tablets e beta para os celulares
+var paddleSpeed = 6;
+let controle = document.getElementById("controle");
+
+// Move com base no DevieOrientation
+socket.on('player1', (userAtual) => {
+  window.addEventListener('deviceorientation', function(e) {    
+    if(userAtual === socket.id){
+      beta = e.beta
+      // up player1
+      if (e.beta < -10) {
+        rightPaddle2 = -paddleSpeed;
+      }
+      // down player1
+      else if (e.beta > 10) {
+        rightPaddle2 = paddleSpeed;
+      } 
+      // stoped player
+      else {
+        rightPaddle2 = 0; 
+      }
+      socket.emit('player1_y', rightPaddle2);
+    }
+  });  
+});
+socket.on('player2', (userAtual) => {
+  window.addEventListener('deviceorientation', function(e) {    
+    if(userAtual === socket.id){
+      gamma = e.beta
+      // up player2
+      if (e.beta < -10) {
+        leftPaddle2 = -paddleSpeed;
+      }
+      // down player2
+      else if (e.beta > 10) {
+        leftPaddle2 = paddleSpeed;
+      } 
+      else {
+        leftPaddle2 = 0;
+      }
+      socket.emit('player2_y', leftPaddle2); 
+    }
+  });  
+});   
+
+// browsers require full screen mode in order to obtain the orientation lock
+var goFullScreen = null;
+        var exitFullScreen = null;
+        if ('requestFullscreen' in document.documentElement) {
+            goFullScreen = 'requestFullscreen';
+            exitFullScreen = 'exitFullscreen';
+        } else if ('mozRequestFullScreen' in document.documentElement) {
+            goFullScreen = 'mozRequestFullScreen';
+            exitFullScreen = 'mozCancelFullScreen';
+        } else if ('webkitRequestFullscreen' in document.documentElement) {
+            goFullScreen = 'webkitRequestFullscreen';
+            exitFullScreen = 'webkitExitFullscreen';
+        } else if ('msRequestFullscreen') {
+            goFullScreen = 'msRequestFullscreen';
+            exitFullScreen = 'msExitFullscreen';
+        }
+
+window.alert('Por favor, gire seu dispositivo (celular deitado)');
+
+window.screen.orientation.addEventListener('change', function(e) {
+  const orientation = e.currentTarget.type;
+  console.log(orientation);
+    if(orientation == "landscape-primary" || orientation == "landscape-secondary") {
+      document.documentElement[goFullScreen] && document.documentElement[goFullScreen](); 
+      window.screen.orientation.lock(orientation);
+      //document.querySelector(".controls").classList.toggle("hide");
+      //document.querySelector(".bla").classList.toggle("hide");
+  }
+});
+
+document.addEventListener("fullscreenchange", function(e) {
+    if (window.screen.orientation.type === "landscape-primary" || window.screen.orientation.type === "landscape-secondary"){
+      window.screen.orientation.lock(window.screen.orientation.type);
+    }
+});
 </script>
 </html>
