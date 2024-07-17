@@ -10,7 +10,14 @@
   <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>
-  <button id="start">Começar o Jogo</button>
+
+  <button id="start" disabled>Começar o Jogo</button>
+  <p id="waiting">Esperando jogadores</p>
+  <div class="div-loading">
+    <button class="loading" type="disabled"></button>
+    <button class="loading" type="disabled"></button>
+  </div>
+  
   <button id="reset">Reset</button>
 </body>
 <script src="/socket.io/socket.io.js"></script>
@@ -37,6 +44,9 @@ var player2score = 0;
 var ballSpeed = 5;
 
 var startButton = document.getElementById("start");
+var waitMessage = document.getElementById("waiting");
+var loadingDiv = document.querySelector('.div.loading')
+var loadingButtons = document.querySelectorAll('.loading')
 var resetButton = document.getElementById("reset");
 let reset = false;
 
@@ -89,23 +99,23 @@ function loop() {
   context.clearRect(0,0,canvas.width,canvas.height);
 
   if(reset == true){
-      player1score = 0;
-      player1.innerHTML = player1score;
-      rightPaddle.width = paddleHeight;
-      maxPaddleXright = canvas.width - grid - paddleHeight;
-      player2score = 0;
-      player2.innerHTML = player2score;
-      leftPaddle.width = paddleHeight;
-      maxPaddleXleft = canvas.width - grid - paddleHeight;
-      ball.resetting = true;
-      ball.y = -10000;
-      setTimeout(() => {
+    player1score = 0;
+    player1.innerHTML = player1score;
+    rightPaddle.width = paddleHeight;
+    maxPaddleXright = canvas.width - grid - paddleHeight;
+    player2score = 0;
+    player2.innerHTML = player2score;
+    leftPaddle.width = paddleHeight;
+    maxPaddleXleft = canvas.width - grid - paddleHeight;
+    ball.resetting = true;
+    ball.y = -10000;
+    setTimeout(() => {
       ball.resetting = false;
       ball.x = canvas.width / 2;
       ball.y = canvas.height / 2;
     }, 400);
-      reset = false;
-    }
+    reset = false;
+  }
 
   // move paddles by their velocity
   leftPaddle.x += leftPaddle.dx;
@@ -154,10 +164,12 @@ function loop() {
     ball.resetting = true;
     
     if(ball.y > canvas.height){
+      socket.emit('ballPosition', ball.x, ball.y);
       player1score += 1;
       player1.innerHTML = player1score;
       scoreP1audio.play();
     }else if(ball.y < 0){
+      socket.emit('ballPosition', ball.x, ball.y);
       player2score += 1;
       player2.innerHTML = player2score;
       scoreP2audio.play();
@@ -228,24 +240,179 @@ function loop() {
   }
 }
 
+// Emite a posição da bolinha
+socket.emit('ballPosition', ball.x, ball.y);
+
+// Recebe a posição do player1 e muda de acordo 
 socket.on('player1movimento', (rightMove) => {
   rightPaddle.dx = rightMove;
   //dx manda a subtração ou adição de velocidade
 })
+
+// Recebe a posição do player2 e muda de acordo
 socket.on('player2movimento', (leftMove) => {
   leftPaddle.dx = leftMove;
 })
 
-startButton.addEventListener("click", () => {
-  requestAnimationFrame(loop);
-  player1.style.display="block";
-  player2.style.display="block";
-  startButton.style.display="none";
-  resetButton.style.display="block";
+socket.on('ballPosition', (x, y) => {
+  ball.x = x;
+  ball.y = y;
 })
 
+// Botão que emiti para o server um evento para iniciar o jogo
+startButton.addEventListener("click", () => {
+  socket.emit('start', '');
+})
+
+// Recebe do server o evento que inicia o jogo
+socket.on('start', () => {
+    requestAnimationFrame(loop);
+    player1.style.display="block";
+    player2.style.display="block";
+    startButton.style.display="none";
+    resetButton.style.display="block";
+    loadingButtons[0].style.display = 'none';
+    loadingButtons[1].style.display = 'none';
+})
+
+// Botão que emiti para o server o resete do jogo e a posição da bola
 resetButton.addEventListener("click", () => {
   reset = true;
+  socket.emit('reset', reset);
+  socket.emit('ballPosition', ball.x, ball.y);
 })
+
+// Recebe do server o evento que reseta o jogo nos clientes
+socket.on('reset', (re) => {
+  reset = re;
+})
+
+var beta = 0; //gamma para os tablets e beta para os celulares
+var paddleSpeed = 6;
+let controle = document.getElementById("controle");
+
+// Move com base no DevieOrientation
+socket.on('player1', (userAtual) => {
+  if(userAtual === socket.id){
+    window.addEventListener('deviceorientation', (e) => {  
+      
+      // Recebe um evento quando um socket desconecta
+      socket.on('left', () => {
+        location.reload();
+      })
+
+        beta = e.beta
+        // up player1
+        if (e.beta < -10) {
+          rightPaddle2 = -paddleSpeed;
+        }
+        // down player1
+        else if (e.beta > 10) {
+          rightPaddle2 = paddleSpeed;
+        } 
+        // stoped player
+        else {
+          rightPaddle2 = 0; 
+        }
+        
+        // Emite o movimento do player 1 para o server
+        socket.emit('player1_y', rightPaddle2);
+
+        loadingButtons[0].style.backgroundColor = 'green';
+
+        // Recebe o evento loading que vai mudar a cor do botão que simula um usuario e muda a mensagem de espera de jogadores
+        socket.on('loading', (color, display) => {
+          loadingButtons[1].style.backgroundColor = color;
+          waitMessage.style.display = display;
+          if(display == 'none') {
+            startButton.disabled = false;
+          }else{
+            startButton.disabled = true;
+          }
+        })
+    });
+  }  
+});
+
+socket.on('player2', (userAtual) => {
+  if(userAtual === socket.id){
+    startButton.style.display = 'none';
+    window.addEventListener('deviceorientation', (e) => { 
+
+      // Recebe um evento quando um socket desconecta
+      socket.on('left', () => {
+        location.reload();
+      })
+
+        gamma = e.beta
+        // up player2
+        if (e.beta < -10) {
+          leftPaddle2 = -paddleSpeed;
+        }
+        // down player2
+        else if (e.beta > 10) {
+          leftPaddle2 = paddleSpeed;
+        } 
+        else {
+          leftPaddle2 = 0;
+        }
+
+        // Emite o movimento do player 2 para o server
+        socket.emit('player2_y', leftPaddle2);
+
+        // emite o evento loading que vai mudar os botões de loading e a mensagem de espera de jogador
+        socket.emit('loading', 'green', 'none');
+        
+        loadingButtons[0].style.backgroundColor = 'green';
+        waitMessage.style.display = 'none';
+
+        // Recebe o evento loading que vai mudar a cor do botão que simula um usuario e muda a mensagem de espera de jogadores
+        socket.on('loading', (color, display) => {
+          loadingButtons[1].style.backgroundColor = color;
+          waitMessage.style.display = display;
+          if(display == 'none') {
+            startButton.disabled = false;
+          }else{
+            startButton.disabled = true;
+          }
+        })
+    }); 
+  }
+});   
+
+// browsers require full screen mode in order to obtain the orientation lock
+var goFullScreen = null;
+var exitFullScreen = null;
+if ('requestFullscreen' in document.documentElement) {
+  goFullScreen = 'requestFullscreen';
+  exitFullScreen = 'exitFullscreen';
+}else if ('mozRequestFullScreen' in document.documentElement) {
+  goFullScreen = 'mozRequestFullScreen';
+  exitFullScreen = 'mozCancelFullScreen';
+}else if ('webkitRequestFullscreen' in document.documentElement) {
+  goFullScreen = 'webkitRequestFullscreen';
+  exitFullScreen = 'webkitExitFullscreen';
+}else if ('msRequestFullscreen') {
+  goFullScreen = 'msRequestFullscreen';
+  exitFullScreen = 'msExitFullscreen';
+}
+
+window.screen.orientation.addEventListener('change', function(e) {
+  const orientation = e.currentTarget.type;
+  console.log(orientation);
+    if(orientation == "landscape-primary" || orientation == "landscape-secondary") {
+      document.documentElement[goFullScreen] && document.documentElement[goFullScreen](); 
+      window.screen.orientation.lock(orientation);
+      //document.querySelector(".controls").classList.toggle("hide");
+      //document.querySelector(".bla").classList.toggle("hide");
+  }
+});
+
+document.addEventListener("fullscreenchange", function(e) {
+    if (window.screen.orientation.type === "landscape-primary" || window.screen.orientation.type === "landscape-secondary"){
+      window.screen.orientation.lock(window.screen.orientation.type);
+    }
+});
+
 </script>
 </html>
