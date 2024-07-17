@@ -53,12 +53,16 @@ io.on("connection", (socket) => {
       io.emit('loading', green, none);
     })
 
+    socket.on('start', () => {
+      io.emit('start', '');
+    })
+
     socket.on("disconnect", () => {
       console.log(`[${socket.id}] Usuário Desconectado`)
       users[socket.id] = undefined;
       userAtual = userAtual - 1;
       io.emit('loading', 'white', 'flex');
-      io.emit("player1", socket.id);
+      io.emit('left', '');
     });
   }
 });

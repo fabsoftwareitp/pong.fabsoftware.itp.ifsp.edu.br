@@ -256,13 +256,16 @@ socket.on('ballPosition', (x, y) => {
 })
 
 startButton.addEventListener("click", () => {
-  requestAnimationFrame(loop);
-  player1.style.display="block";
-  player2.style.display="block";
-  startButton.style.display="none";
-  resetButton.style.display="block";
-  loadingButtons[0].style.display = 'none';
-  loadingButtons[1].style.display = 'none';
+  socket.emit('start', '');
+})
+socket.on('start', () => {
+    requestAnimationFrame(loop);
+    player1.style.display="block";
+    player2.style.display="block";
+    startButton.style.display="none";
+    resetButton.style.display="block";
+    loadingButtons[0].style.display = 'none';
+    loadingButtons[1].style.display = 'none';
 })
 
 socket.on('reset', (re) => {
@@ -281,67 +284,74 @@ let controle = document.getElementById("controle");
 
 // Move com base no DevieOrientation
 socket.on('player1', (userAtual) => {
-  window.addEventListener('deviceorientation', function(e) {    
-    if(userAtual === socket.id){
-      console.log('1');
-      beta = e.beta
-      // up player1
-      if (e.beta < -10) {
-        rightPaddle2 = -paddleSpeed;
-      }
-      // down player1
-      else if (e.beta > 10) {
-        rightPaddle2 = paddleSpeed;
-      } 
-      // stoped player
-      else {
-        rightPaddle2 = 0; 
-      }
-      socket.emit('player1_y', rightPaddle2);
-      loadingButtons[0].style.backgroundColor = 'green';
-      socket.on('loading', (color, display) => {
-        loadingButtons[1].style.backgroundColor = color;
-        waitMessage.style.display = display;
-        if(display == 'none') {
-          startButton.disabled = false;
-        }else{
-          startButton.disabled = true;
-        }
+  console.log('player1:' + userAtual);
+  if(userAtual === socket.id){
+    window.addEventListener('deviceorientation', (e) => {   
+      socket.on('left', () => {
+        location.reload();
       })
-    }
-  });  
+        beta = e.beta
+        // up player1
+        if (e.beta < -10) {
+          rightPaddle2 = -paddleSpeed;
+        }
+        // down player1
+        else if (e.beta > 10) {
+          rightPaddle2 = paddleSpeed;
+        } 
+        // stoped player
+        else {
+          rightPaddle2 = 0; 
+        }
+        socket.emit('player1_y', rightPaddle2);
+        loadingButtons[0].style.backgroundColor = 'green';
+        socket.on('loading', (color, display) => {
+          loadingButtons[1].style.backgroundColor = color;
+          waitMessage.style.display = display;
+          if(display == 'none') {
+            startButton.disabled = false;
+          }else{
+            startButton.disabled = true;
+          }
+        })
+    });
+  }  
 });
 socket.on('player2', (userAtual) => {
-  window.addEventListener('deviceorientation', function(e) {    
-    if(userAtual === socket.id){
-      console.log('2');
-      gamma = e.beta
-      // up player2
-      if (e.beta < -10) {
-        leftPaddle2 = -paddleSpeed;
-      }
-      // down player2
-      else if (e.beta > 10) {
-        leftPaddle2 = paddleSpeed;
-      } 
-      else {
-        leftPaddle2 = 0;
-      }
-      socket.emit('player2_y', leftPaddle2);
-      socket.emit('loading', 'green', 'none');
-      loadingButtons[0].style.backgroundColor = 'green';
-      waitMessage.style.display = 'none';
-      socket.on('loading', (color, display) => {
-        loadingButtons[1].style.backgroundColor = color;
-        waitMessage.style.display = display;
-        if(display == 'none') {
-          startButton.disabled = false;
-        }else{
-          startButton.disabled = true;
-        }
+  if(userAtual === socket.id){
+    console.log('player2:' + userAtual);
+    startButton.style.display = 'none';
+    window.addEventListener('deviceorientation', (e) => { 
+      socket.on('left', () => {
+        location.reload();
       })
-    }
-  });  
+        gamma = e.beta
+        // up player2
+        if (e.beta < -10) {
+          leftPaddle2 = -paddleSpeed;
+        }
+        // down player2
+        else if (e.beta > 10) {
+          leftPaddle2 = paddleSpeed;
+        } 
+        else {
+          leftPaddle2 = 0;
+        }
+        socket.emit('player2_y', leftPaddle2);
+        socket.emit('loading', 'green', 'none');
+        loadingButtons[0].style.backgroundColor = 'green';
+        waitMessage.style.display = 'none';
+        socket.on('loading', (color, display) => {
+          loadingButtons[1].style.backgroundColor = color;
+          waitMessage.style.display = display;
+          if(display == 'none') {
+            startButton.disabled = false;
+          }else{
+            startButton.disabled = true;
+          }
+        })
+    }); 
+}
 });   
 
 // browsers require full screen mode in order to obtain the orientation lock
