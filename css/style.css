@@ -59,6 +59,35 @@ html, body {
   border-radius: 15px;
 }
 
+#waiting {
+  position: absolute;
+  width: 20vw;
+  bottom: 40%;
+  font-size: 2rem;
+  border-radius: 15px;
+  color: aliceblue;
+}
+
+.div-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 40%;
+  font-size: 2rem;
+  border-radius: 15px;
+  color: aliceblue;
+  gap: 4px;
+}
+
+.loading {
+  width: 40px;
+  height: 20px;
+  border-radius: 20px;
+}
+
 #reset {
   display: none;
   position: absolute;

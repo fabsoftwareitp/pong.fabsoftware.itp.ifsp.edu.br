@@ -10,7 +10,14 @@
   <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>
-  <button id="start">Começar o Jogo</button>
+
+  <button id="start" disabled>Começar o Jogo</button>
+  <p id="waiting">Esperando jogadores</p>
+  <div class="div-loading">
+    <button class="loading" type="disabled"></button>
+    <button class="loading" type="disabled"></button>
+  </div>
+  
   <button id="reset">Reset</button>
 </body>
 <script src="/socket.io/socket.io.js"></script>
@@ -37,6 +44,9 @@ var player2score = 0;
 var ballSpeed = 5;
 
 var startButton = document.getElementById("start");
+var waitMessage = document.getElementById("waiting");
+var loadingDiv = document.querySelector('.div.loading')
+var loadingButtons = document.querySelectorAll('.loading')
 var resetButton = document.getElementById("reset");
 let reset = false;
 
@@ -230,6 +240,8 @@ function loop() {
   }
 }
 
+socket.emit('ballPosition', ball.x, ball.y);
+
 socket.on('player1movimento', (rightMove) => {
   rightPaddle.dx = rightMove;
   //dx manda a subtração ou adição de velocidade
@@ -237,8 +249,6 @@ socket.on('player1movimento', (rightMove) => {
 socket.on('player2movimento', (leftMove) => {
   leftPaddle.dx = leftMove;
 })
-
-socket.emit('ballPosition', ball.x, ball.y);
 
 socket.on('ballPosition', (x, y) => {
     ball.x = x;
@@ -251,6 +261,8 @@ startButton.addEventListener("click", () => {
   player2.style.display="block";
   startButton.style.display="none";
   resetButton.style.display="block";
+  loadingButtons[0].style.display = 'none';
+  loadingButtons[1].style.display = 'none';
 })
 
 socket.on('reset', (re) => {
@@ -271,6 +283,7 @@ let controle = document.getElementById("controle");
 socket.on('player1', (userAtual) => {
   window.addEventListener('deviceorientation', function(e) {    
     if(userAtual === socket.id){
+      console.log('1');
       beta = e.beta
       // up player1
       if (e.beta < -10) {
@@ -285,12 +298,23 @@ socket.on('player1', (userAtual) => {
         rightPaddle2 = 0; 
       }
       socket.emit('player1_y', rightPaddle2);
+      loadingButtons[0].style.backgroundColor = 'green';
+      socket.on('loading', (color, display) => {
+        loadingButtons[1].style.backgroundColor = color;
+        waitMessage.style.display = display;
+        if(display == 'none') {
+          startButton.disabled = false;
+        }else{
+          startButton.disabled = true;
+        }
+      })
     }
   });  
 });
 socket.on('player2', (userAtual) => {
   window.addEventListener('deviceorientation', function(e) {    
     if(userAtual === socket.id){
+      console.log('2');
       gamma = e.beta
       // up player2
       if (e.beta < -10) {
@@ -303,7 +327,19 @@ socket.on('player2', (userAtual) => {
       else {
         leftPaddle2 = 0;
       }
-      socket.emit('player2_y', leftPaddle2); 
+      socket.emit('player2_y', leftPaddle2);
+      socket.emit('loading', 'green', 'none');
+      loadingButtons[0].style.backgroundColor = 'green';
+      waitMessage.style.display = 'none';
+      socket.on('loading', (color, display) => {
+        loadingButtons[1].style.backgroundColor = color;
+        waitMessage.style.display = display;
+        if(display == 'none') {
+          startButton.disabled = false;
+        }else{
+          startButton.disabled = true;
+        }
+      })
     }
   });  
 });   

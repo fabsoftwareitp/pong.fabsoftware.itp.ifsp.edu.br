@@ -39,7 +39,6 @@ io.on("connection", (socket) => {
     });
     socket.on('player2_y', (leftMove) => {
       io.emit('player2movimento', leftMove);
-      io.emit('start', userAtual);
     });
 
     socket.on('ballPosition', (x, y) => {
@@ -50,13 +49,16 @@ io.on("connection", (socket) => {
       io.emit('reset', reset);
     })
 
+    socket.on('loading', (green, none) => {
+      io.emit('loading', green, none);
+    })
+
     socket.on("disconnect", () => {
       console.log(`[${socket.id}] Usuário Desconectado`)
       users[socket.id] = undefined;
       userAtual = userAtual - 1;
-      io.in("player2").socketsJoin("player1");
-      io.in("player2").socketsLeave("player2");
-      io.to("player1").emit("id", userAtual);
+      io.emit('loading', 'white', 'flex');
+      io.emit("player1", socket.id);
     });
   }
 });
