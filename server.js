@@ -10,23 +10,25 @@ const io = new Server(server, {
   connectionStateRecovery: {}
 });
 
-app.get("/", (req, res2) => {
-  res2.sendFile(__dirname + "/tela.html");
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/tela.html");
 })
 
 app.use(express.static('img'));
 app.use(express.static('css'));
 app.use(express.static('sounds'));
 
-const users = {};
+// Limite de usuários
 const limit = 2;
+
+// Quantidade de usuários
 let userAtual = 0;
+
 io.on("connection", (socket) => {
   if (userAtual == limit) {
     console.log("Limite de usuários atingido");
   } else {
     console.log(`[${socket.id}] Usuário Conectado`);
-    users[socket.id] = { id: socket.io, y: 0 };
     userAtual = userAtual + 1;
     if (userAtual === 1) {
       io.emit("player1", socket.id);
@@ -37,6 +39,7 @@ io.on("connection", (socket) => {
     socket.on('player1_y', (rightMove) => {
       io.emit('player1movimento', rightMove); 
     });
+
     socket.on('player2_y', (leftMove) => {
       io.emit('player2movimento', leftMove);
     });
@@ -59,7 +62,6 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
       console.log(`[${socket.id}] Usuário Desconectado`)
-      users[socket.id] = undefined;
       userAtual = userAtual - 1;
       io.emit('loading', 'white', 'flex');
       io.emit('left', '');
