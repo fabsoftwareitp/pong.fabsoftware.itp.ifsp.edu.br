@@ -240,9 +240,6 @@ function loop() {
   }
 }
 
-// Emite a posição da bolinha
-socket.emit('ballPosition', ball.x, ball.y);
-
 // Recebe a posição do player1 e muda de acordo 
 socket.on('player1movimento', (rightMove) => {
   rightPaddle.dx = rightMove;
@@ -273,6 +270,7 @@ socket.on('start', () => {
     resetButton.style.display="block";
     loadingButtons[0].style.display = 'none';
     loadingButtons[1].style.display = 'none';
+    socket.emit('ballPosition', ball.x, ball.y);
 })
 
 // Botão que emiti para o server o resete do jogo e a posição da bola
