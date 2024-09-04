@@ -11,11 +11,22 @@
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>
 
-  <button id="start" disabled>Começar o Jogo</button>
-  <p id="waiting">Esperando jogadores</p>
-  <div class="div-loading">
-    <button class="loading" type="disabled"></button>
-    <button class="loading" type="disabled"></button>
+  <div class="main-div">
+    
+    <p id="waiting">Esperando jogadores</p>
+
+    <button id="start" disabled>Começar</button>
+  
+    <div>
+      <button class="loading" type="disabled"></button>
+      <button class="loading" type="disabled"></button>
+    </div>
+
+    <div>
+      <button class="control" type="disabled">←</button>
+      <button class="control" type="disabled">→</button>
+    </div>
+
   </div>
   
   <button id="reset">Reset</button>
@@ -47,6 +58,7 @@ var startButton = document.getElementById("start");
 var waitMessage = document.getElementById("waiting");
 var loadingDiv = document.querySelector('.div.loading')
 var loadingButtons = document.querySelectorAll('.loading')
+var controlButtons = document.querySelectorAll('.control')
 var resetButton = document.getElementById("reset");
 let reset = false;
 
@@ -242,13 +254,13 @@ function loop() {
 
 // Recebe a posição do player1 e muda de acordo 
 socket.on('player1movimento', (rightMove) => {
-  rightPaddle.dx = rightMove;
+  rightPaddle.x += rightMove;
   //dx manda a subtração ou adição de velocidade
 })
 
 // Recebe a posição do player2 e muda de acordo
 socket.on('player2movimento', (leftMove) => {
-  leftPaddle.dx = leftMove;
+  leftPaddle.x += leftMove;
 })
 
 socket.on('ballPosition', (x, y) => {
@@ -266,10 +278,13 @@ socket.on('start', () => {
     requestAnimationFrame(loop);
     player1.style.display="block";
     player2.style.display="block";
+    canvas.style.display="block";
     startButton.style.display="none";
     resetButton.style.display="block";
     loadingButtons[0].style.display = 'none';
     loadingButtons[1].style.display = 'none';
+    controlButtons[0].style.display = 'block';
+    controlButtons[1].style.display = 'block';
     socket.emit('ballPosition', ball.x, ball.y);
 })
 
@@ -286,35 +301,28 @@ socket.on('reset', (re) => {
 })
 
 var beta = 0; //gamma para os tablets e beta para os celulares
-var paddleSpeed = 6;
+var paddleSpeed = 20;
 let controle = document.getElementById("controle");
 
 // Move com base no DevieOrientation
 socket.on('player1', (userAtual) => {
-  if(userAtual === socket.id){
-    window.addEventListener('deviceorientation', (e) => {  
+  if(userAtual === socket.id){ 
       
       // Recebe um evento quando um socket desconecta
       socket.on('left', () => {
         location.reload();
       })
-
-        beta = e.beta
-        // up player1
-        if (e.beta < -10) {
-          rightPaddle2 = -paddleSpeed;
-        }
-        // down player1
-        else if (e.beta > 10) {
-          rightPaddle2 = paddleSpeed;
-        } 
-        // stoped player
-        else {
-          rightPaddle2 = 0; 
-        }
-        
-        // Emite o movimento do player 1 para o server
+      
+      rightPaddle2 = 0;
+      
+      controlButtons[0].addEventListener('click', () => {
+        rightPaddle2 = -paddleSpeed;
         socket.emit('player1_y', rightPaddle2);
+      })
+      controlButtons[1].addEventListener('click', () => {
+        rightPaddle2 = paddleSpeed;
+        socket.emit('player1_y', rightPaddle2);
+      })
 
         loadingButtons[0].style.backgroundColor = 'green';
 
@@ -328,35 +336,28 @@ socket.on('player1', (userAtual) => {
             startButton.disabled = true;
           }
         })
-    });
   }  
 });
 
 socket.on('player2', (userAtual) => {
   if(userAtual === socket.id){
-    startButton.style.display = 'none';
-    window.addEventListener('deviceorientation', (e) => { 
+    startButton.style.display = 'none'; 
 
       // Recebe um evento quando um socket desconecta
       socket.on('left', () => {
         location.reload();
       })
 
-        gamma = e.beta
-        // up player2
-        if (e.beta < -10) {
-          leftPaddle2 = -paddleSpeed;
-        }
-        // down player2
-        else if (e.beta > 10) {
-          leftPaddle2 = paddleSpeed;
-        } 
-        else {
-          leftPaddle2 = 0;
-        }
+      leftPaddle2 = 0;
 
-        // Emite o movimento do player 2 para o server
+      controlButtons[0].addEventListener('click', () => {
+        leftPaddle2 = -paddleSpeed;
         socket.emit('player2_y', leftPaddle2);
+      })
+      controlButtons[1].addEventListener('click', () => {
+        leftPaddle2 = paddleSpeed;
+        socket.emit('player2_y', leftPaddle2);
+      })
 
         // emite o evento loading que vai mudar os botões de loading e a mensagem de espera de jogador
         socket.emit('loading', 'green', 'none');
@@ -374,7 +375,6 @@ socket.on('player2', (userAtual) => {
             startButton.disabled = true;
           }
         })
-    }); 
   }
 });   
 

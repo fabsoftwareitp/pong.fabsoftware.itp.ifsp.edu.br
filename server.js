@@ -11,6 +11,10 @@ const io = new Server(server, {
 });
 
 app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+})
+
+app.post("/tela", (req, res) => {
   res.sendFile(__dirname + "/tela.html");
 })
 
@@ -25,6 +29,15 @@ const limit = 2;
 let userAtual = 0;
 
 io.on("connection", (socket) => {
+
+  socket.on('name', (name) => {
+    console.log(name);
+  })
+
+  socket.on('password', (password) => {
+    console.log(password);
+  })
+
   if (userAtual == limit) {
     console.log("Limite de usuários atingido");
   } else {

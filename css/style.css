@@ -10,6 +10,10 @@ html, body {
   justify-content: center;
 }
 
+#game {
+  display: none;
+}
+
 #p1,
 #p2 {
   color: white;
@@ -49,10 +53,10 @@ html, body {
   position: absolute;
   width: 25vw;
   filter: opacity(0.1);
+  z-index: -1;
 }
 
 #start {
-  position: absolute;
   width: 20vw;
   height: 5vh;
   font-size: 2rem;
@@ -60,7 +64,6 @@ html, body {
 }
 
 #waiting {
-  position: absolute;
   width: 20vw;
   bottom: 40%;
   font-size: 2rem;
@@ -68,24 +71,25 @@ html, body {
   color: aliceblue;
 }
 
-.div-loading {
+.main-div {
   display: flex;
+  flex-direction: column;
+  gap: 40px;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  bottom: 40%;
-  font-size: 2rem;
-  border-radius: 15px;
-  color: aliceblue;
-  gap: 4px;
+  
 }
 
 .loading {
   width: 40px;
   height: 20px;
   border-radius: 20px;
+}
+
+.control {
+  width: 100px;
+  height: 80px;
+  display: none;
 }
 
 #reset {
