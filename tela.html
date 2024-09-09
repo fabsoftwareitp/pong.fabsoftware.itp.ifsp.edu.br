@@ -6,10 +6,11 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body id="tela">
-  <img id="fab-logo" src="/Fab.png" alt="Logo da Fábrica de Software">
+  <img id="fab-logo" src="/logo-oficial.svg" alt="Logo da Fábrica de Software">
   <h1 id="p1">0</h1>
   <canvas width="615" height="800" id="game"></canvas>
   <h1 id="p2">0</h1>
+  <h1 id="winner"></h1>
   <button id="start">Começar o Jogo</button>
   <button id="reset">Reset</button>
 </body>
@@ -38,6 +39,7 @@ var ballSpeed = 5;
 
 var startButton = document.getElementById("start");
 var resetButton = document.getElementById("reset");
+var winnerText = document.getElementById("winner");
 let reset = false;
 
 const leftPaddle = {
@@ -83,9 +85,11 @@ function collides(obj1, obj2) {
          obj1.x + obj1.width > obj2.x;
 }
 
+let canvaID = null;
+
 // game loop
 function loop() {
-  requestAnimationFrame(loop);
+  canvaID = requestAnimationFrame(loop);
   context.clearRect(0,0,canvas.width,canvas.height);
 
   if(reset == true){
@@ -164,6 +168,13 @@ function loop() {
     }
     
     if(player1score == 10 || player2score == 10){
+      if(player1score == 10){
+        winnerText.innerHTML = "Barra vermelha ganhou!";
+        winnerText.style.color = "red";
+      }else{
+        winnerText.innerHTML = "Barra azul ganhou!";
+        winnerText.style.color = "blue";
+      }
       player1score = 0;
       player1.innerHTML = player1score;
       rightPaddle.width = paddleHeight;
@@ -172,6 +183,13 @@ function loop() {
       player2.innerHTML = player2score;
       leftPaddle.width = paddleHeight;
       maxPaddleXleft = canvas.width - grid - paddleHeight;
+      cancelAnimationFrame(canvaID);
+      player1.style.display="none";
+      player2.style.display="none";
+      startButton.style.display="block";
+      resetButton.style.display="none";
+      canvas.style.display="none";
+      
     }
 
     if(player1score == player2score + 3) {
@@ -241,7 +259,9 @@ startButton.addEventListener("click", () => {
   player1.style.display="block";
   player2.style.display="block";
   startButton.style.display="none";
+  winnerText.innerHTML="";
   resetButton.style.display="block";
+  canvas.style.display="block";
 })
 
 resetButton.addEventListener("click", () => {

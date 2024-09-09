@@ -51,6 +51,12 @@ html, body {
   filter: opacity(0.1);
 }
 
+#winner {
+  position: absolute;
+  color: aliceblue;
+  bottom: 35%;
+}
+
 #start {
   position: absolute;
   width: 20vw;
