@@ -22,11 +22,6 @@
       <button class="loading" type="disabled"></button>
     </div>
 
-    <div>
-      <button class="control" type="disabled">←</button>
-      <button class="control" type="disabled">→</button>
-    </div>
-
   </div>
   
   <button id="reset">Reset</button>
@@ -61,6 +56,8 @@ var loadingButtons = document.querySelectorAll('.loading')
 var controlButtons = document.querySelectorAll('.control')
 var resetButton = document.getElementById("reset");
 let reset = false;
+
+socket.emit('userConnection', '');
 
 const leftPaddle = {
   // start in the middle of the game on the left side
@@ -283,8 +280,6 @@ socket.on('start', () => {
     resetButton.style.display="block";
     loadingButtons[0].style.display = 'none';
     loadingButtons[1].style.display = 'none';
-    controlButtons[0].style.display = 'block';
-    controlButtons[1].style.display = 'block';
     socket.emit('ballPosition', ball.x, ball.y);
 })
 
@@ -302,65 +297,58 @@ socket.on('reset', (re) => {
 
 var beta = 0; //gamma para os tablets e beta para os celulares
 var paddleSpeed = 20;
-let controle = document.getElementById("controle");
 
 // Move com base no DevieOrientation
 socket.on('player1', (userAtual) => {
   if(userAtual === socket.id){ 
-      
-      // Recebe um evento quando um socket desconecta
-      socket.on('left', () => {
-        location.reload();
-      })
-      
-      rightPaddle2 = 0;
-      
-      controlButtons[0].addEventListener('click', () => {
+    // Recebe um evento quando um socket desconecta
+    socket.on('left', () => {
+      location.reload();
+    })
+    window.addEventListener('keydown', (e) => {    
+      if(e.key === "ArrowLeft"){
         rightPaddle2 = -paddleSpeed;
-        socket.emit('player1_y', rightPaddle2);
-      })
-      controlButtons[1].addEventListener('click', () => {
+      }else if(e.key === "ArrowRight"){
         rightPaddle2 = paddleSpeed;
-        socket.emit('player1_y', rightPaddle2);
-      })
+      }
 
-        loadingButtons[0].style.backgroundColor = 'green';
+      socket.emit('player1_y', rightPaddle2);
+    })
+    
+    loadingButtons[0].style.backgroundColor = 'green';
 
-        // Recebe o evento loading que vai mudar a cor do botão que simula um usuario e muda a mensagem de espera de jogadores
-        socket.on('loading', (color, display) => {
-          loadingButtons[1].style.backgroundColor = color;
-          waitMessage.style.display = display;
-          if(display == 'none') {
-            startButton.disabled = false;
-          }else{
-            startButton.disabled = true;
-          }
-        })
+// Recebe o evento loading que vai mudar a cor do botão que simula um usuario e muda a mensagem de espera de jogadores
+socket.on('loading', (color, display) => {
+  loadingButtons[1].style.backgroundColor = color;
+  waitMessage.style.display = display;
+  if(display == 'none') {
+    startButton.disabled = false;
+  }else{
+    startButton.disabled = true;
+  }
+})
   }  
 });
 
 socket.on('player2', (userAtual) => {
   if(userAtual === socket.id){
-    startButton.style.display = 'none'; 
-
-      // Recebe um evento quando um socket desconecta
-      socket.on('left', () => {
+    // Recebe um evento quando um socket desconecta
+    socket.on('left', () => {
         location.reload();
       })
+    window.addEventListener('keydown', (e) => {
+      startButton.style.display = 'none'; 
 
-      leftPaddle2 = 0;
-
-      controlButtons[0].addEventListener('click', () => {
+      if(e.key === "ArrowLeft"){
         leftPaddle2 = -paddleSpeed;
-        socket.emit('player2_y', leftPaddle2);
-      })
-      controlButtons[1].addEventListener('click', () => {
+      }else if(e.key === "ArrowRight"){
         leftPaddle2 = paddleSpeed;
-        socket.emit('player2_y', leftPaddle2);
-      })
+      }
 
-        // emite o evento loading que vai mudar os botões de loading e a mensagem de espera de jogador
-        socket.emit('loading', 'green', 'none');
+      socket.emit('player2_y', leftPaddle2);
+    })
+     // emite o evento loading que vai mudar os botões de loading e a mensagem de espera de jogador
+     socket.emit('loading', 'green', 'none');
         
         loadingButtons[0].style.backgroundColor = 'green';
         waitMessage.style.display = 'none';

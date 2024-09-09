@@ -9,6 +9,8 @@ const { Server } = require("socket.io");
 const io = new Server(server, {
   connectionStateRecovery: {}
 });
+let userAtual = 0;
+const rooms = new Map();
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -22,25 +24,28 @@ app.use(express.static('img'));
 app.use(express.static('css'));
 app.use(express.static('sounds'));
 
-// Limite de usuários
-const limit = 2;
-
-// Quantidade de usuários
-let userAtual = 0;
-
 io.on("connection", (socket) => {
 
-  socket.on('name', (name) => {
+  socket.on('roomInfo', (name, password, type) => {
+    console.log(type);
     console.log(name);
-  })
-
-  socket.on('password', (password) => {
     console.log(password);
+    if(type === "enter"){
+      if(rooms.has(name)){
+        console('boa');
+      }else{
+        console('2131');
+      }
+    }else{
+      let roomName = name;
+      let roomPassword = password;
+      rooms.set(roomName, roomPassword);
+    }
+    
   })
 
-  if (userAtual == limit) {
-    console.log("Limite de usuários atingido");
-  } else {
+
+  socket.on('userConnection', ()=> {
     console.log(`[${socket.id}] Usuário Conectado`);
     userAtual = userAtual + 1;
     if (userAtual === 1) {
@@ -79,7 +84,7 @@ io.on("connection", (socket) => {
       io.emit('loading', 'white', 'flex');
       io.emit('left', '');
     });
-  }
+  })
 });
 
 server.listen(3000, () => {

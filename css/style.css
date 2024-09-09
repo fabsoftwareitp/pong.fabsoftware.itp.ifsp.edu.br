@@ -84,12 +84,7 @@ html, body {
   width: 40px;
   height: 20px;
   border-radius: 20px;
-}
-
-.control {
-  width: 100px;
-  height: 80px;
-  display: none;
+  border: 2px solid black;
 }
 
 #reset {
