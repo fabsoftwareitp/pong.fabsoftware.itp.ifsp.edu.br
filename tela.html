@@ -233,7 +233,10 @@ function loop() {
     ball.y = rightPaddle.y - ball.height;
   }
   // draw ball
-  context.fillRect(ball.x, ball.y, ball.width, ball.height);
+  context.beginPath();
+  context.arc(ball.x, ball.y, ball.width, 0, Math.PI * 2);
+  context.closePath();
+  context.fill();
 
   //context.fillRect(0, 0, canvas.width, grid);
   context.fillRect(0, 0, grid, canvas.height);
