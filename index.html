@@ -10,11 +10,10 @@
         <h1 id="formTitle">Entrar</h1>
         <form method="POST" action="/tela" id="form">
             Nome da sala :<input type="text" required id="name">
-            Senha da sala :<input type="password" required id="password">
             <button id="submitButton" type="submit">Entrar</button>
         </form>
     </div>
-    <button id="changeType">Criar Sala</button>
+    <button id="createRoom">Criar Sala</button>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -22,26 +21,27 @@
 
     let form = document.querySelector('#form');
     let name = document.querySelector('#name');
-    let password = document.querySelector('#password');
-    let changeType = document.querySelector('#changeType');
-    let type = "enter";
+    let createRoom = document.querySelector('#createRoom');
 
-    changeType.addEventListener('click', (e) => {
-        if(type == "enter"){
-            type = "create";
-            document.querySelector('#submitButton').innerHTML = "Criar";
-            document.querySelector('#formTitle').innerHTML = "Criar sala";
-            changeType.innerHTML = "Entrar"
-        }else{
-            type = "enter";
-            document.querySelector('#submitButton').innerHTML = "Entrar";
-            document.querySelector('#formTitle').innerHTML = "Entrar";
-            changeType.innerHTML = "Criar sala" 
+    function makeid(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
         }
+        return result;
+    }
+
+    createRoom.addEventListener('click', () => {
+        const roomID = makeid(8);
+        window.location.href = "/tela?roomID="+roomID;
     })
 
     form.addEventListener('submit', (e) => {
-        socket.emit('roomInfo', name.value, password.value, type);
+        socket.emit('roomInfo', name.value, type);
     })
 </script>
 </html>

@@ -9,80 +9,71 @@ const { Server } = require("socket.io");
 const io = new Server(server, {
   connectionStateRecovery: {}
 });
-let userAtual = 0;
-const rooms = new Map();
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 })
 
-app.post("/tela", (req, res) => {
+app.all("/tela", (req, res) => {
   res.sendFile(__dirname + "/tela.html");
+  app.locals.roomID = req.query.roomID;
 })
 
 app.use(express.static('img'));
 app.use(express.static('css'));
 app.use(express.static('sounds'));
-
+let player1ID = null;
+let player1 = false;
 io.on("connection", (socket) => {
 
-  socket.on('roomInfo', (name, password, type) => {
-    console.log(type);
-    console.log(name);
-    console.log(password);
-    if(type === "enter"){
-      if(rooms.has(name)){
-        console('boa');
-      }else{
-        console('2131');
-      }
-    }else{
-      let roomName = name;
-      let roomPassword = password;
-      rooms.set(roomName, roomPassword);
-    }
-    
-  })
-
+  const roomID = app.locals.roomID;
 
   socket.on('userConnection', ()=> {
     console.log(`[${socket.id}] Usuário Conectado`);
-    userAtual = userAtual + 1;
-    if (userAtual === 1) {
-      io.emit("player1", socket.id);
-    } else if(userAtual === 2) {
-      io.emit("player2", socket.id);
+    console.log(roomID);
+    if(!player1){
+      socket.join(roomID);
+      io.to(roomID).emit("player1", socket.id);
+      player1 = true;
+    }else{
+      socket.join(roomID);
+      io.to(roomID).emit("player2", socket.id, player1ID);
+      player1 = false;
     }
+
+    socket.on('number', (a) => {
+      io.to(roomID).emit('number', a);
+    })
     
     socket.on('player1_y', (rightMove) => {
-      io.emit('player1movimento', rightMove); 
+      io.to(roomID).emit('player1movimento', rightMove); 
     });
 
     socket.on('player2_y', (leftMove) => {
-      io.emit('player2movimento', leftMove);
+      io.to(roomID).emit('player2movimento', leftMove);
     });
 
     socket.on('ballPosition', (x, y) => {
-      io.emit('ballPosition', x, y);
+      io.to(roomID).emit('ballPosition', x, y);
     })
 
     socket.on('reset', (reset) => {
-      io.emit('reset', reset);
+      io.to(roomID).emit('reset', reset);
     })
 
     socket.on('loading', (green, none) => {
-      io.emit('loading', green, none);
+      io.to(roomID).emit('loading', green, none);
     })
 
     socket.on('start', () => {
-      io.emit('start', '');
+      io.to(roomID).emit('start', '');
     })
 
     socket.on("disconnect", () => {
       console.log(`[${socket.id}] Usuário Desconectado`)
-      userAtual = userAtual - 1;
-      io.emit('loading', 'white', 'flex');
-      io.emit('left', '');
+      player1 = false;
+      io.to(roomID).emit('loading', 'white', 'flex');
+      io.to(roomID).emit('left', '');
     });
   })
 });

@@ -305,7 +305,8 @@ socket.on('player1', (userAtual) => {
     socket.on('left', () => {
       location.reload();
     })
-    window.addEventListener('keydown', (e) => {    
+    window.addEventListener('keydown', (e) => { 
+      socket.emit('number', e.key);   
       if(e.key === "ArrowLeft"){
         rightPaddle2 = -paddleSpeed;
       }else if(e.key === "ArrowRight"){
@@ -318,15 +319,15 @@ socket.on('player1', (userAtual) => {
     loadingButtons[0].style.backgroundColor = 'green';
 
 // Recebe o evento loading que vai mudar a cor do botão que simula um usuario e muda a mensagem de espera de jogadores
-socket.on('loading', (color, display) => {
-  loadingButtons[1].style.backgroundColor = color;
-  waitMessage.style.display = display;
-  if(display == 'none') {
-    startButton.disabled = false;
-  }else{
-    startButton.disabled = true;
-  }
-})
+  socket.on('loading', (color, display) => {
+    loadingButtons[1].style.backgroundColor = color;
+    waitMessage.style.display = display;
+    if(display == 'none') {
+      startButton.disabled = false;
+    }else{
+      startButton.disabled = true;
+    }
+  })
   }  
 });
 
@@ -337,8 +338,7 @@ socket.on('player2', (userAtual) => {
         location.reload();
       })
     window.addEventListener('keydown', (e) => {
-      startButton.style.display = 'none'; 
-
+      socket.emit('number', e.key);
       if(e.key === "ArrowLeft"){
         leftPaddle2 = -paddleSpeed;
       }else if(e.key === "ArrowRight"){
