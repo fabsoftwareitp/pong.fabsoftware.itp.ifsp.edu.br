@@ -176,11 +176,18 @@ function loop() {
       player1score += 1;
       player1.innerHTML = player1score;
       scoreP1audio.play();
+      socket.emit('ballPosition', ball.x, ball.y);
     }else if(ball.y < 0){
       player2score += 1;
       player2.innerHTML = player2score;
       scoreP2audio.play();
+      socket.emit('ballPosition');
     }
+
+    socket.on('ballPosition', () => {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+    })
     
     if(player1score == 10 || player2score == 10){
       player1score = 0;

@@ -62,8 +62,8 @@ io.on("connection", (socket) => {
       io.to(roomID).emit('player2movimento', leftMove);
     });
 
-    socket.on('ballPosition', (x, y) => {
-      io.to(roomID).emit('ballPosition', x, y);
+    socket.on('ballPosition', () => {
+      io.to(roomID).emit('ballPosition');
     })
 
     socket.on('reset', (reset) => {
