@@ -173,12 +173,10 @@ function loop() {
     ball.resetting = true;
     
     if(ball.y > canvas.height){
-      socket.emit('ballPosition', ball.x, ball.y);
       player1score += 1;
       player1.innerHTML = player1score;
       scoreP1audio.play();
     }else if(ball.y < 0){
-      socket.emit('ballPosition', ball.x, ball.y);
       player2score += 1;
       player2.innerHTML = player2score;
       scoreP2audio.play();
@@ -260,11 +258,6 @@ socket.on('player2movimento', (leftMove) => {
   leftPaddle.x += leftMove;
 })
 
-socket.on('ballPosition', (x, y) => {
-  ball.x = x;
-  ball.y = y;
-})
-
 // Botão que emiti para o server um evento para iniciar o jogo
 startButton.addEventListener("click", () => {
   socket.emit('start', '');
@@ -280,14 +273,12 @@ socket.on('start', () => {
     resetButton.style.display="block";
     loadingButtons[0].style.display = 'none';
     loadingButtons[1].style.display = 'none';
-    socket.emit('ballPosition', ball.x, ball.y);
 })
 
 // Botão que emiti para o server o resete do jogo e a posição da bola
 resetButton.addEventListener("click", () => {
   reset = true;
   socket.emit('reset', reset);
-  socket.emit('ballPosition', ball.x, ball.y);
 })
 
 // Recebe do server o evento que reseta o jogo nos clientes
