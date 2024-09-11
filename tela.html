@@ -295,10 +295,10 @@ socket.on('player1', (userAtual) => {
       socket.emit('number', e.key);   
       if(e.key === "ArrowLeft"){
         rightPaddle2 = -paddleSpeed;
-        rightPaddle.x -= leftMove;
+        rightPaddle.x += -paddleSpeed;
       }else if(e.key === "ArrowRight"){
         rightPaddle2 = paddleSpeed;
-        rightPaddle.x += leftMove;
+        rightPaddle.x += paddleSpeed;
       }
 
       socket.emit('player1_y', rightPaddle2);
@@ -335,10 +335,10 @@ socket.on('player2', (userAtual) => {
       socket.emit('number', e.key);
       if(e.key === "ArrowLeft"){
         leftPaddle2 = -paddleSpeed;
-        leftPaddle.x -= leftMove;
+        leftPaddle.x += -paddleSpeed;
       }else if(e.key === "ArrowRight"){
         leftPaddle2 = paddleSpeed;
-        leftPaddle.x += leftMove;
+        leftPaddle.x += paddleSpeed;
       }
 
       socket.emit('player2_y', leftPaddle2);
