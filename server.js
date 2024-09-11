@@ -22,28 +22,37 @@ app.all("/tela", (req, res) => {
 app.use(express.static('img'));
 app.use(express.static('css'));
 app.use(express.static('sounds'));
-let player1ID = null;
-let player1 = false;
+
+app.use(express.urlencoded({
+  extended: true
+}))
+
+app.post('/verify', (req, res) => {
+  if(rooms.indexOf(req.body.roomID) == -1){
+    res.redirect('/');
+  }else{
+    res.redirect('/tela?roomID='+req.body.roomID);;
+  }
+})
+
+const rooms = [];
+let roomUsers = 0;
+
 io.on("connection", (socket) => {
 
-  const roomID = app.locals.roomID;
-
   socket.on('userConnection', ()=> {
+    const roomID = app.locals.roomID;
     console.log(`[${socket.id}] Usuário Conectado`);
     console.log(roomID);
-    if(!player1){
+
+    if(rooms.indexOf(roomID) == -1){
       socket.join(roomID);
       io.to(roomID).emit("player1", socket.id);
-      player1 = true;
+      rooms.push(roomID);
     }else{
       socket.join(roomID);
-      io.to(roomID).emit("player2", socket.id, player1ID);
-      player1 = false;
+      io.to(roomID).emit("player2", socket.id);
     }
-
-    socket.on('number', (a) => {
-      io.to(roomID).emit('number', a);
-    })
     
     socket.on('player1_y', (rightMove) => {
       io.to(roomID).emit('player1movimento', rightMove); 
@@ -69,11 +78,20 @@ io.on("connection", (socket) => {
       io.to(roomID).emit('start', '');
     })
 
+    console.log(roomUsers);
+
     socket.on("disconnect", () => {
-      console.log(`[${socket.id}] Usuário Desconectado`)
+      console.log(`[${socket.id}] Usuário Desconectado`);
+      console.log(roomUsers);
+      
       player1 = false;
       io.to(roomID).emit('loading', 'white', 'flex');
       io.to(roomID).emit('left', '');
+      if(roomUsers === 0){
+        rooms.splice(rooms.indexOf(roomID), 1);
+      }else{
+        roomUsers -= 1;
+      }
     });
   })
 });

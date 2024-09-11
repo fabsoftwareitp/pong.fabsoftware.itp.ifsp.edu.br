@@ -7,10 +7,10 @@
 </head>
 <body>
     <div>
-        <h1 id="formTitle">Entrar</h1>
-        <form method="POST" action="/tela" id="form">
-            Nome da sala :<input type="text" required id="name">
-            <button id="submitButton" type="submit">Entrar</button>
+        <h1>Entrar</h1>
+        <form method="POST" action="/verify" id="form">
+            Nome da sala :<input type="text" required id="name" name="roomID">
+            <button id="submitButton">Entrar</button>
         </form>
     </div>
     <button id="createRoom">Criar Sala</button>
@@ -40,8 +40,5 @@
         window.location.href = "/tela?roomID="+roomID;
     })
 
-    form.addEventListener('submit', (e) => {
-        socket.emit('roomInfo', name.value, type);
-    })
 </script>
 </html>
