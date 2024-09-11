@@ -247,17 +247,6 @@ function loop() {
   }
 }
 
-// Recebe a posição do player1 e muda de acordo 
-socket.on('player1movimento', (rightMove) => {
-  rightPaddle.x += rightMove;
-  //dx manda a subtração ou adição de velocidade
-})
-
-// Recebe a posição do player2 e muda de acordo
-socket.on('player2movimento', (leftMove) => {
-  leftPaddle.x += leftMove;
-})
-
 // Botão que emiti para o server um evento para iniciar o jogo
 startButton.addEventListener("click", () => {
   socket.emit('start', '');
@@ -292,6 +281,12 @@ var paddleSpeed = 20;
 // Move com base no DevieOrientation
 socket.on('player1', (userAtual) => {
   if(userAtual === socket.id){ 
+    
+    // Recebe a posição do player2 e muda de acordo
+    socket.on('player2movimento', (leftMove) => {
+      leftPaddle.x += leftMove;
+    })
+
     // Recebe um evento quando um socket desconecta
     socket.on('left', () => {
       location.reload();
@@ -324,6 +319,12 @@ socket.on('player1', (userAtual) => {
 
 socket.on('player2', (userAtual) => {
   if(userAtual === socket.id){
+
+    // Recebe a posição do player1 e muda de acordo 
+    socket.on('player1movimento', (rightMove) => {
+      rightPaddle.x += rightMove;
+      //dx manda a subtração ou adição de velocidade
+    })
     // Recebe um evento quando um socket desconecta
     socket.on('left', () => {
         location.reload();
