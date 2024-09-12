@@ -173,17 +173,18 @@ function loop() {
     ball.resetting = true;
     
     if(ball.y > canvas.height){
+      socket.emit('score', '');
       player1score += 1;
       player1.innerHTML = player1score;
       scoreP1audio.play();
     }else if(ball.y < 0){
+      socket.emit('score', '');
       player2score += 1;
       player2.innerHTML = player2score;
       scoreP2audio.play();
     }
     
     if(player1score == 10 || player2score == 10){
-      socket.emit('score', '');
       player1score = 0;
       player1.innerHTML = player1score;
       rightPaddle.width = paddleHeight;
