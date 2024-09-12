@@ -196,7 +196,11 @@ function loop() {
     }
 
     socket.on('score', () => {
-      ball.resetting = true;
+      setTimeout(() => {
+      ball.resetting = false;
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+    }, 400);
     })
 
     if(player1score == player2score + 3) {
