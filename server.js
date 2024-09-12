@@ -62,6 +62,10 @@ io.on("connection", (socket) => {
       io.to(roomID).emit('player2movimento', leftMove);
     });
 
+    socket.on('score', () =>{
+      io.to(roomID).emit('score', '');
+    })
+
     socket.on('reset', (reset) => {
       io.to(roomID).emit('reset', reset);
     })

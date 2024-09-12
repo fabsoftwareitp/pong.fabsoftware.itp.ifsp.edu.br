@@ -183,6 +183,7 @@ function loop() {
     }
     
     if(player1score == 10 || player2score == 10){
+      socket.emit('score', '');
       player1score = 0;
       player1.innerHTML = player1score;
       rightPaddle.width = paddleHeight;
@@ -192,6 +193,10 @@ function loop() {
       leftPaddle.width = paddleHeight;
       maxPaddleXleft = canvas.width - grid - paddleHeight;
     }
+
+    socket.on('score', () => {
+      ball.resetting = true;
+    })
 
     if(player1score == player2score + 3) {
       rightPaddle.width += 25;
@@ -234,7 +239,10 @@ function loop() {
     ball.y = rightPaddle.y - ball.height;
   }
   // draw ball
-  context.fillRect(ball.x, ball.y, ball.width, ball.height);
+  context.beginPath();
+  context.arc(ball.x, ball.y, ball.width, 0, Math.PI * 2);
+  context.closePath();
+  context.fill();
 
   //context.fillRect(0, 0, canvas.width, grid);
   context.fillRect(0, 0, grid, canvas.height);
